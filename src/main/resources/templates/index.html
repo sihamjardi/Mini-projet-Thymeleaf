@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="fr">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Dashboard - Restaurant Management</title>
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/styles.css" th:href="@{/css/styles.css}"/>
+    <link rel="stylesheet" href="/css/dashboard.css" th:href="@{/css/dashboard.css}"/>
+</head>
+<body>
+
+<!-- Navigation Bar -->
+<div th:replace="~{fragments/nav :: navigation(page=${page})}"></div>
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="container-fluid px-4">
+        <div class="hero-content">
+            <h1 class="hero-title">
+                <i class="bi bi-speedometer2 text-primary"></i>
+                Tableau de Bord
+            </h1>
+            <p class="hero-subtitle">
+                Surveillez les réservations, les tables et les performances de votre restaurant en un coup d'œil
+            </p>
+        </div>
+    </div>
+</section>
+
+<!-- Main Content -->
+<div class="container-fluid px-4 py-5" style="margin-top: 140px;">
+    
+    <!-- Statistics Cards -->
+    <div class="row g-4 mb-4">
+        <!-- Réservations du jour -->
+        <div class="col-xl-3 col-lg-6 col-md-6">
+            <div class="stat-card card-reservations h-100">
+                <div class="stat-card-body">
+                    <div class="stat-icon">
+                        <i class="bi bi-calendar-check"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h6 class="stat-label">Réservations du jour</h6>
+                        <h2 class="stat-number" th:text="${todayReservationCount}">0</h2>
+                        <p class="stat-info">
+                            <i class="bi bi-arrow-up"></i> 
+                            <span th:text="${#temporals.format(date, 'dd/MM/yyyy')}">Aujourd'hui</span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Taux d'occupation -->
+        <div class="col-xl-3 col-lg-6 col-md-6">
+            <div class="stat-card card-occupancy h-100">
+                <div class="stat-card-body">
+                    <div class="stat-icon">
+                        <i class="bi bi-graph-up-arrow"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h6 class="stat-label">Taux d'occupation</h6>
+                        <h2 class="stat-number" th:text="${#numbers.formatDecimal(overallOccupancy, 1, 1)} + '%'">0%</h2>
+                        <p class="stat-info">
+                            <i class="bi bi-clock"></i> 
+                            <span>En temps réel</span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Total clients -->
+        <div class="col-xl-3 col-lg-6 col-md-6">
+            <div class="stat-card card-clients h-100">
+                <div class="stat-card-body">
+                    <div class="stat-icon">
+                        <i class="bi bi-people-fill"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h6 class="stat-label">Total Clients</h6>
+                        <h2 class="stat-number" th:text="${clientCount}">0</h2>
+                        <p class="stat-info">
+                            <i class="bi bi-database"></i> 
+                            <span>Enregistrés</span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Taux de no-show -->
+        <div class="col-xl-3 col-lg-6 col-md-6">
+            <div class="stat-card card-noshow h-100">
+                <div class="stat-card-body">
+                    <div class="stat-icon">
+                        <i class="bi bi-exclamation-triangle"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h6 class="stat-label">Taux de No-Show</h6>
+                        <h2 class="stat-number" th:text="${#numbers.formatDecimal(noShowRate * 100, 1, 1)} + '%'">0%</h2>
+                        <p class="stat-info">
+                            <i class="bi bi-eye-slash"></i> 
+                            <span>Absences</span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts Section -->
+    <div class="row g-4 mb-4">
+        <!-- Graphique 1: Taux d'occupation par service -->
+        <div class="col-xl-4 col-lg-6">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">
+                        <i class="bi bi-pie-chart-fill"></i> Taux d'occupation par service
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="serviceChart" height="300"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Graphique 2: Évolution des réservations -->
+        <div class="col-xl-4 col-lg-6">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">
+                        <i class="bi bi-graph-up"></i> Évolution des réservations (semaine)
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="weekChart" height="300"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Graphique 3: Répartition des statuts -->
+        <div class="col-xl-4 col-lg-6">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-warning text-dark">
+                    <h5 class="mb-0">
+                        <i class="bi bi-pie-chart"></i> Répartition des statuts
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="statusChart" height="300"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Reservations du jour Table -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-header bg-gradient-primary text-white">
+                    <h5 class="mb-0">
+                        <i class="bi bi-list-ul"></i> Réservations du jour
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th><i class="bi bi-person"></i> Client</th>
+                                    <th><i class="bi bi-clock"></i> Heure</th>
+                                    <th><i class="bi bi-people"></i> Couverts</th>
+                                    <th><i class="bi bi-info-circle"></i> Statut</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="res : ${todayReservations}">
+                                    <td th:text="${res.clientName}">N/A</td>
+                                    <td th:text="${#temporals.format(res.dateHeure, 'HH:mm')}">--:--</td>
+                                    <td>
+                                        <span class="badge bg-info" th:text="${res.nbCouverts}">0</span>
+                                    </td>
+                                    <td>
+                                        <span class="badge" 
+                                              th:classappend="${res.statut == 'CONFIRME' ? 'bg-success' : 
+                                                               (res.statut == 'ANNULE' ? 'bg-danger' : 
+                                                               (res.statut == 'NO_SHOW' ? 'bg-warning' : 'bg-secondary'))}"
+                                              th:text="${res.statut}">PENDING</span>
+                                    </td>
+                                </tr>
+                                <tr th:if="${#lists.isEmpty(todayReservations)}">
+                                    <td colspan="4" class="text-center text-muted">
+                                        <i class="bi bi-inbox"></i> Aucune réservation aujourd'hui
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<!-- Bootstrap JS and Popper -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+<script th:inline="javascript">
+/*<![CDATA[*/
+document.addEventListener('DOMContentLoaded', function() {
+    
+    // Données depuis le serveur
+    const matinRate = /*[[${matin}]]*/ 0;
+    const soirRate = /*[[${soir}]]*/ 0;
+    const weekStats = /*[[${weekStats}]]*/ {};
+    const statusStats = /*[[${statusStats}]]*/ {};
+    
+    // Graphique 1: Taux d'occupation par service (Doughnut)
+    const serviceCtx = document.getElementById('serviceChart').getContext('2d');
+    new Chart(serviceCtx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Service Matin', 'Service Soir'],
+            datasets: [{
+                data: [Math.round(matinRate * 100), Math.round(soirRate * 100)],
+                backgroundColor: ['#3b82f6', '#10b981'],
+                borderWidth: 2,
+                borderColor: '#fff'
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { position: 'bottom' },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return context.label + ': ' + context.parsed + '%';
+                        }
+                    }
+                }
+            }
+        }
+    });
+
+    // Graphique 2: Évolution des réservations (Line)
+    const weekCtx = document.getElementById('weekChart').getContext('2d');
+    const weekLabels = Object.keys(weekStats).reverse();
+    const weekValues = Object.values(weekStats).reverse();
+    
+    new Chart(weekCtx, {
+        type: 'line',
+        data: {
+            labels: weekLabels.map(date => {
+                const d = new Date(date);
+                return d.toLocaleDateString('fr-FR', {weekday: 'short', day: 'numeric'});
+            }),
+            datasets: [{
+                label: 'Réservations',
+                data: weekValues,
+                borderColor: '#10b981',
+                backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                borderWidth: 3,
+                fill: true,
+                tension: 0.4,
+                pointBackgroundColor: '#10b981',
+                pointBorderColor: '#fff',
+                pointBorderWidth: 2,
+                pointRadius: 5
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: {
+                y: { 
+                    beginAtZero: true, 
+                    ticks: { stepSize: 1 } 
+                }
+            }
+        }
+    });
+
+    // Graphique 3: Répartition des statuts (Pie)
+    const statusCtx = document.getElementById('statusChart').getContext('2d');
+    const statusLabels = Object.keys(statusStats);
+    const statusValues = Object.values(statusStats);
+    const statusColors = ['#10b981', '#ef4444', '#f59e0b', '#8b5cf6', '#6366f1'];
+    
+    new Chart(statusCtx, {
+        type: 'pie',
+        data: {
+            labels: statusLabels,
+            datasets: [{
+                data: statusValues,
+                backgroundColor: statusColors.slice(0, statusLabels.length),
+                borderWidth: 2,
+                borderColor: '#fff'
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { 
+                legend: { position: 'bottom' }
+            }
+        }
+    });
+
+    // Animation des cartes statistiques
+    const cards = document.querySelectorAll('.stat-card');
+    cards.forEach((card, index) => {
+        setTimeout(() => {
+            card.style.opacity = '1';
+            card.style.animation = 'fadeInUp 0.6s ease forwards';
+        }, index * 100);
+    });
+});
+/*]]>*/
+</script>
+
+</body>
+</html>

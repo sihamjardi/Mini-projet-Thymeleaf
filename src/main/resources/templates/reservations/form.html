@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Nouvelle Réservation</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}"/>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="/css/styles.css" th:href="@{/css/styles.css}"/>
+    <link rel="stylesheet" href="/css/dashboard.css" th:href="@{/css/dashboard.css}"/>
+</head>
+<body>
+<div class="container">
+  <!-- Navigation -->
+    <!-- Navigation Bar -->
+    <div th:replace="~{fragments/nav :: navigation(page=${page})}"></div>
+
+  <div class="card">
+    <div class="card-header">
+      <h1>
+          <i class="bi bi-plus-square"></i>  Ajouter une réservation
+      </h1>
+    </div>
+    <div class="card-body">
+      <form th:action="@{/reservations}" method="post">
+        <div class="form-group">
+          <label class="form-label">Client</label>
+          <select name="clientId" class="form-select" required>
+            <option value="">-- Sélectionner un client --</option>
+            <option th:each="c : ${clients}" th:value="${c.id}" th:text="${c.nom}"></option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Table</label>
+          <select name="tableId" class="form-select" required>
+            <option value="">-- Sélectionner une table --</option>
+            <option th:each="t : ${tables}" th:value="${t.id}" th:text="${t.numero + ' (' + t.zone + ') - ' + t.places + ' places'}"></option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Date et Heure</label>
+          <input type="datetime-local" name="dateHeure" class="form-control" required />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Nombre de couverts</label>
+          <input type="number" name="nbCouverts" class="form-control" min="1" required />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Statut</label>
+          <select name="statut" class="form-select" required>
+            <option value="CONFIRMEE">Confirmée</option>
+            <option value="ANNULEE">Annulée</option>
+              <option value="NO_SHOW" >No-Show</option>
+          </select>
+        </div>
+
+        <div class="mt-4">
+          <button class="btn btn-primary" type="submit">
+              <i class="bi bi-save-fill"></i>Enregistrer
+          </button>
+          <a class="btn btn-secondary btn-back" href="#" onclick="history.back();return false;">
+              <i class="bi bi-arrow-left"></i>Retour
+          </a>
+          <a class="btn btn-ghost" th:href="@{/reservations}">
+              <i class="bi bi-x-circle"></i>Annuler
+          </a>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+</body>
+</html>

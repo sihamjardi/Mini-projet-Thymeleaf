@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Réservations</title>
+    <link rel="stylesheet" href="/css/styles.css" th:href="@{/css/styles.css}"/>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="/css/styles.css" th:href="@{/css/styles.css}"/>
+    <link rel="stylesheet" href="/css/dashboard.css" th:href="@{/css/dashboard.css}"/>
+</head>
+<body>
+  <div th:replace="~{fragments/nav :: navigation(page=${page})}"></div>
+  
+  <div class="container">
+    <!-- Messages de succès -->
+    <div th:if="${success == 'create'}" class="alert alert-success">
+        <i class="bi bi-check-circle me-2"></i> Réservation créée avec succès!
+    </div>
+    <div th:if="${success == 'update'}" class="alert alert-success">
+        <i class="bi bi-check-circle me-2"></i> Réservation modifiée avec succès!
+    </div>
+    <div th:if="${success == 'delete'}" class="alert alert-success">
+        <i class="bi bi-check-circle me-2"></i> Réservation supprimée avec succès!
+    </div>
+
+    <div class="card">
+      <div class="card-body">
+        <div class="mb-3">
+          <h1 class="text-center"><i class="bi bi-calendar-event"></i>
+              Réservations
+          </h1>
+        </div>
+      </div>
+      <div>
+        <!-- Filtres -->
+        <form method="get" th:action="@{/reservations}" class="filters">
+          <input type="date" name="date" class="form-control" th:value="${date}" placeholder="Date"/>
+          <input type="text" name="zone" class="form-control" placeholder="Zone" th:value="${zone}"/>
+          <input type="number" name="min" class="form-control" placeholder="Min couverts" th:value="${min}"/>
+          <input type="number" name="max" class="form-control" placeholder="Max couverts" th:value="${max}"/>
+          <select name="statut" class="form-select" th:value="${statut}">
+            <option value="">-- Statut --</option>
+            <option value="CONFIRMEE">Confirmée</option>
+            <option value="ANNULEE">Annulée</option>
+              <option value="NO_SHOW">No-Show</option>
+          </select>
+          <button class="btn btn-primary" type="submit">
+              <i class="bi bi-search"></i> Filtrer
+          </button>
+          <a class="btn btn-secondary" th:href="@{/reservations}">
+              <i class="bi bi-arrow-counterclockwise"></i> Réinitialiser</a>
+        </form>
+      </div>
+    </div>
+
+    <!-- Table des réservations -->
+    <div class="card">
+      <div class="card-body">
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th>Date/Heure</th>
+              <th>Client</th>
+              <th>Table</th>
+              <th>Zone</th>
+              <th>Nb couverts</th>
+              <th>Statut</th>
+              <th class="text-center">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr th:each="r : ${reservations}">
+              <td th:text="${#temporals.format(r.dateHeure, 'yyyy-MM-dd HH:mm')}"></td>
+              <td th:text="${r.client.nom}"></td>
+              <td th:text="${r.tablersto.numero}"></td>
+              <td><span class="badge" th:text="${r.tablersto.zone}"></span></td>
+              <td th:text="${r.nbCouverts}"></td>
+              <td>
+                <span th:if="${r.statut == 'CONFIRMEE'}" class="badge badge-success">✓ Confirmée</span>
+                <span th:if="${r.statut == 'ANNULEE'}" class="badge badge-danger">✗ Annulée</span>
+              </td>
+              <td class="text-center">
+                <a class="btn btn-success btn-sm" th:href="@{/reservations/edit(clientId=${r.client.id},tableId=${r.tablersto.id},dateHeure=${#temporals.format(r.dateHeure, 'yyyy-MM-dd''T''HH:mm:ss')})}">✏
+                    <i class="bi bi-pencil-fill"></i>Modifier
+                </a>
+                <form th:action="@{/reservations/delete}" method="post" style="display:inline-block;margin-left:6px">
+                  <input type="hidden" name="clientId" th:value="${r.client.id}"/>
+                  <input type="hidden" name="tableId" th:value="${r.tablersto.id}"/>
+                  <input type="hidden" name="dateHeure" th:value="${#temporals.format(r.dateHeure, 'yyyy-MM-dd''T''HH:mm:ss')}"/>
+                  <button class="btn btn-danger btn-sm" type="submit" onclick="return confirm('Voulez-vous vraiment supprimer cette réservation ?')">
+                      <i class="bi bi-trash-fill"></i>  Supprimer
+                  </button>
+                </form>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+      <div class="text-center mt-3 mb-3">
+          <a class="btn btn-secondary btn-back" href="#" onclick="history.back();return false;">
+              <i class="bi bi-arrow-left"></i> Retour
+          </a>
+          <a class="btn btn-primary" th:href="@{/reservations/new}">
+              <i class="bi bi-plus-square"></i>  Ajouter une réservation
+          </a>
+      </div>
+  </div>
+
+  <script>
+    // Auto-hide success messages after 5 seconds
+    setTimeout(function() {
+      document.querySelectorAll('.alert').forEach(function(el) {
+        el.style.transition = 'opacity 0.5s';
+        el.style.opacity = '0';
+        setTimeout(function() { el.remove(); }, 500);
+      });
+    }, 5000);
+  </script>
+</body>
+</html>

@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>📊 Statistiques Restaurant</title>
+  <link rel="stylesheet" href="/css/styles.css" th:href="@{/css/styles.css}"/>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="/css/styles.css" th:href="@{/css/styles.css}"/>
+    <link rel="stylesheet" href="/css/dashboard.css" th:href="@{/css/dashboard.css}"/>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .stats-dashboard {
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .stat-card-modern {
+      background: white;
+      border-radius: 16px;
+      padding: 24px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .stat-card-modern::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 5px;
+      background: linear-gradient(90deg, var(--gradient-start), var(--gradient-end));
+    }
+
+    .stat-card-modern:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 15px 50px rgba(0,0,0,0.15);
+    }
+
+    .stat-icon {
+      font-size: 48px;
+      margin-bottom: 12px;
+      opacity: 0.9;
+    }
+
+    .stat-value {
+      font-size: 36px;
+      font-weight: 700;
+      color: #1a202c;
+      margin: 8px 0;
+    }
+
+    .stat-label {
+      font-size: 14px;
+      color: #64748b;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      font-weight: 600;
+    }
+
+    .chart-container {
+      background: white;
+      border-radius: 16px;
+      padding: 24px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+      margin-bottom: 24px;
+    }
+
+    .date-selector {
+      background: white;
+      border-radius: 16px;
+      padding: 20px;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+      margin-bottom: 24px;
+    }
+
+    .btn-gradient {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border: none;
+      color: white;
+      font-weight: 600;
+      padding: 12px 24px;
+      border-radius: 10px;
+      transition: all 0.3s ease;
+    }
+
+    .btn-gradient:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 20px rgba(102,126,234,0.4);
+      color: white;
+    }
+
+    .grid-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 24px;
+      margin-bottom: 24px;
+    }
+
+    .grid-charts {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+      gap: 24px;
+    }
+
+    @media (max-width: 768px) {
+      .grid-cards { grid-template-columns: 1fr; }
+      .grid-charts { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="stats-dashboard">
+    <div th:replace="~{fragments/nav :: navigation(page=${page})}"></div>
+
+    <!-- Date Selector -->
+    <div class="date-selector">
+      <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
+        <h2 class="m-0">📊 Dashboard Statistiques</h2>
+        <form th:action="@{/reservations/stats}" method="get" class="d-flex gap-2 align-items-center">
+          <input type="date" name="date" class="form-control" th:value="${#temporals.format(date, 'yyyy-MM-dd')}"
+                 style="max-width: 200px;"/>
+          <button type="submit" class="btn-gradient">🔄 Actualiser</button>
+          <a class="btn btn-secondary" href="#" onclick="history.back();return false;">← Retour</a>
+        </form>
+      </div>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="grid-cards">
+      <!-- Total Clients -->
+      <div class="stat-card-modern" style="--gradient-start: #3b82f6; --gradient-end: #1d4ed8;">
+        <div class="stat-icon">👥</div>
+        <div class="stat-value" th:text="${totalClients}">0</div>
+        <div class="stat-label">Total Clients</div>
+      </div>
+
+      <!-- Total Tables -->
+      <div class="stat-card-modern" style="--gradient-start: #10b981; --gradient-end: #047857;">
+        <div class="stat-icon">🪑</div>
+        <div class="stat-value" th:text="${totalTables}">0</div>
+        <div class="stat-label">Total Tables</div>
+      </div>
+
+      <!-- Réservations du jour -->
+      <div class="stat-card-modern" style="--gradient-start: #8b5cf6; --gradient-end: #6d28d9;">
+        <div class="stat-icon">📋</div>
+        <div class="stat-value" th:text="${totalReservations}">0</div>
+        <div class="stat-label">Réservations du jour</div>
+      </div>
+
+      <!-- Confirmées -->
+      <div class="stat-card-modern" style="--gradient-start: #f59e0b; --gradient-end: #d97706;">
+        <div class="stat-icon">✅</div>
+        <div class="stat-value" th:text="${confirmed}">0</div>
+        <div class="stat-label">Confirmées</div>
+      </div>
+
+      <!-- Annulées -->
+      <div class="stat-card-modern" style="--gradient-start: #ef4444; --gradient-end: #dc2626;">
+        <div class="stat-icon">❌</div>
+        <div class="stat-value" th:text="${cancelled}">0</div>
+        <div class="stat-label">Annulées</div>
+      </div>
+
+      <!-- Taux d'occupation -->
+      <div class="stat-card-modern" style="--gradient-start: #ec4899; --gradient-end: #be185d;">
+        <div class="stat-icon">🏠</div>
+        <div class="stat-value" th:text="${#numbers.formatDecimal((matin + soir) / 2 * 100, 1, 1)}">0</div>
+        <div class="stat-label">Taux occupation (%)</div>
+      </div>
+    </div>
+
+    <!-- Charts Grid -->
+    <div class="grid-charts">
+      <!-- Chart 1: Taux d'occupation - Doughnut -->
+      <div class="chart-container">
+        <h4 class="mb-4">Taux d'occupation par service</h4>
+        <canvas id="occupancyDoughnut"></canvas>
+      </div>
+
+      <!-- Chart 2: Sièges réservés - Bars -->
+      <div class="chart-container">
+        <h4 class="mb-4">Sièges réservés par service</h4>
+        <canvas id="seatsBarChart"></canvas>
+      </div>
+
+      <!-- Chart 3: Évolution taux - Line -->
+      <div class="chart-container">
+        <h4 class="mb-4">Évolution du taux d'occupation</h4>
+        <canvas id="occupancyLineChart"></canvas>
+      </div>
+
+      <!-- Chart 4: Répartition statut - Pie -->
+      <div class="chart-container">
+        <h4 class="mb-4">Répartition par statut</h4>
+        <canvas id="statusPieChart"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <script th:inline="javascript">
+    // Données du modèle
+    const matinRate = /*[[${matin}]]*/ 0;
+    const soirRate = /*[[${soir}]]*/ 0;
+    const matinReserved = /*[[${matinReserved}]]*/ 0;
+    const soirReserved = /*[[${soirReserved}]]*/ 0;
+    const totalConfirmed = /*[[${confirmed}]]*/ 0;
+    const totalCancelled = /*[[${cancelled}]]*/ 0;
+    const totalReservations = /*[[${totalReservations}]]*/ 0;
+
+    const ChartColors = {
+      blue: 'rgba(59, 130, 246, 0.8)',
+      blueDark: '#1e40af',
+      green: 'rgba(16, 185, 129, 0.8)',
+      greenDark: '#059669',
+      purple: 'rgba(139, 92, 246, 0.8)',
+      purpleDark: '#6d28d9',
+      orange: 'rgba(245, 158, 11, 0.8)',
+      orangeDark: '#d97706',
+      red: 'rgba(239, 68, 68, 0.8)',
+      redDark: '#dc2626',
+      pink: 'rgba(236, 72, 153, 0.8)',
+      pinkDark: '#be185d'
+    };
+
+    // Chart 1: Doughnut - Taux d'occupation
+    new Chart(document.getElementById('occupancyDoughnut'), {
+      type: 'doughnut',
+      data: {
+        labels: ['Matin', 'Soir'],
+        datasets: [{
+          data: [Math.round(matinRate * 100), Math.round(soirRate * 100)],
+          backgroundColor: [ChartColors.blue, ChartColors.green],
+          borderColor: ['#fff', '#fff'],
+          borderWidth: 3,
+          hoverOffset: 8
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: true,
+        plugins: {
+          legend: {
+            position: 'bottom',
+            labels: {
+              padding: 20,
+              font: { size: 14, weight: '600' }
+            }
+          },
+          tooltip: {
+            callbacks: {
+              label: function(context) {
+                return context.label + ': ' + context.parsed + '%';
+              }
+            }
+          }
+        },
+        cutout: '60%'
+      }
+    });
+
+    // Chart 2: Bar Chart - Sièges réservés
+    new Chart(document.getElementById('seatsBarChart'), {
+      type: 'bar',
+      data: {
+        labels: ['Matin', 'Soir'],
+        datasets: [{
+          label: 'Sièges réservés',
+          data: [matinReserved, soirReserved],
+          backgroundColor: [ChartColors.blue, ChartColors.green],
+          borderRadius: 10,
+          borderSkipped: false
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: true,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            callbacks: {
+              label: function(context) {
+                return context.parsed.y + ' sièges';
+              }
+            }
+          }
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            ticks: {
+              stepSize: 5,
+              font: { size: 12, weight: '600' }
+            },
+            grid: {
+              color: 'rgba(0,0,0,0.05)'
+            }
+          },
+          x: {
+            ticks: {
+              font: { size: 13, weight: '600' }
+            },
+            grid: { display: false }
+          }
+        }
+      }
+    });
+
+    // Chart 3: Line Chart - Évolution taux
+    new Chart(document.getElementById('occupancyLineChart'), {
+      type: 'line',
+      data: {
+        labels: ['Matin', 'Soir'],
+        datasets: [{
+          label: 'Taux d\'occupation (%)',
+          data: [Math.round(matinRate * 100), Math.round(soirRate * 100)],
+          borderColor: ChartColors.purpleDark,
+          backgroundColor: 'rgba(139, 92, 246, 0.1)',
+          borderWidth: 3,
+          fill: true,
+          tension: 0.4,
+          pointRadius: 8,
+          pointHoverRadius: 10,
+          pointBackgroundColor: ChartColors.purpleDark,
+          pointBorderColor: '#fff',
+          pointBorderWidth: 3
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: true,
+        plugins: {
+          legend: {
+            display: false
+          },
+          tooltip: {
+            callbacks: {
+              label: function(context) {
+                return context.parsed.y + '%';
+              }
+            }
+          }
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            max: 100,
+            ticks: {
+              callback: function(value) {
+                return value + '%';
+              },
+              font: { size: 12, weight: '600' }
+            },
+            grid: {
+              color: 'rgba(0,0,0,0.05)'
+            }
+          },
+          x: {
+            ticks: {
+              font: { size: 13, weight: '600' }
+            },
+            grid: { display: false }
+          }
+        }
+      }
+    });
+
+    // Chart 4: Pie Chart - Répartition par statut
+    const confirmedCount = totalConfirmed || 0;
+    const cancelledCount = totalCancelled || 0;
+    const pendingCount = totalReservations - confirmedCount - cancelledCount;
+
+    new Chart(document.getElementById('statusPieChart'), {
+      type: 'pie',
+      data: {
+        labels: ['Confirmées', 'Annulées', 'En attente'],
+        datasets: [{
+          data: [confirmedCount, cancelledCount, pendingCount],
+          backgroundColor: [ChartColors.orange, ChartColors.red, ChartColors.purple],
+          borderColor: ['#fff', '#fff', '#fff'],
+          borderWidth: 3,
+          hoverOffset: 8
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: true,
+        plugins: {
+          legend: {
+            position: 'bottom',
+            labels: {
+              padding: 20,
+              font: { size: 14, weight: '600' }
+            }
+          },
+          tooltip: {
+            callbacks: {
+              label: function(context) {
+                const label = context.label || '';
+                const value = context.parsed || 0;
+                const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                const percentage = Math.round((value / total) * 100);
+                return label + ': ' + value + ' (' + percentage + '%)';
+              }
+            }
+          }
+        }
+      }
+    });
+  </script>
+</body>
+</html>
