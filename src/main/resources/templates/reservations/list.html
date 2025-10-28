@@ -81,6 +81,7 @@
               <td>
                 <span th:if="${r.statut == 'CONFIRMEE'}" class="badge badge-success">✓ Confirmée</span>
                 <span th:if="${r.statut == 'ANNULEE'}" class="badge badge-danger">✗ Annulée</span>
+                <span th:if="${r.statut == 'NO_SHOW'}" class="badge bg-warning text-dark">⚠ No_Show</span>
               </td>
               <td class="text-center">
                 <a class="btn btn-success btn-sm" th:href="@{/reservations/edit(clientId=${r.client.id},tableId=${r.tablersto.id},dateHeure=${#temporals.format(r.dateHeure, 'yyyy-MM-dd''T''HH:mm:ss')})}">✏
