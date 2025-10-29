@@ -2,6 +2,8 @@ package com.example.restaurant.repository;
 
 import com.example.restaurant.model.Reservation;
 import com.example.restaurant.model.ReservationPK;
+import jakarta.transaction.Transactional;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.data.repository.CrudRepository;
@@ -34,4 +36,14 @@ public interface ReservationRepository extends CrudRepository<Reservation, Reser
                                  @Param("end") java.time.LocalDateTime end,
                                  @Param("min") Integer min,
                                  @Param("max") Integer max);
+
+    @Modifying
+    @Transactional
+    @Query("DELETE FROM Reservation r WHERE r.tablersto.id = :tableId")
+    void deleteByTableId(@Param("tableId") Long tableId);
+
+    @Modifying
+    @Transactional
+    @Query("DELETE FROM Reservation r WHERE r.client.id = :clientId")
+    void deleteByClientId(@Param("clientId") Long clientId);
 }
