@@ -133,21 +133,25 @@ spring.jpa.hibernate.ddl-auto=update
 
 ## 5. Lancer le projet
 
-###5.1 Prérequis
+### 5.1 Prérequis
 
 Java 17 ou plus
 Maven 3.x
 
-## 5.2 Installation
+### 5.2 Installation
 
-# Cloner le dépôt
+**Cloner le dépôt**
+
 git clone https://github.com/nom-utilisateur/restaurant-reservation.git
 cd restaurant-reservation
-# Lancer l’application
+
+**Lancer l’application**
+
 mvn spring-boot:run
 
-## 5.3 Accès
+### 5.3 Accès
 Page d’accueil : [http://localhost:8080](http://localhost:8080/)
+
 Tableau de bord / statistiques : [http://localhost:8080/statistiques](http://localhost:8080/reservations/stats?date=2025-11-01)
 
 ---
@@ -186,13 +190,12 @@ Tableau de bord / statistiques : [http://localhost:8080/statistiques](http://loc
 ---
 
 # 7. Démonstration (Vidéo)
-## 🎬 Demo Video
 
 ## 🎬 Démo Vidéo
 
 [![Regarder la vidéo](https://img.youtube.com/vi/XQd5ssVA0rY/0.jpg)](https://youtu.be/XQd5ssVA0rY)
 
-Ce que la vidéo montre :
+**Ce que la vidéo montre :**
 
 -Navigation dans les pages
 
@@ -213,6 +216,7 @@ Ce que la vidéo montre :
 - Encadrant: Mr.LACHGAR Mohamed 
 - Module: Techniques des Programmation Avancées - JAVA Avancé
 - Etablissement: Ecole Normale supérieur - MARRAKECH (ENS-M)
+
 
 
 
