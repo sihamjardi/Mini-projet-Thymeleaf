@@ -1,6 +1,7 @@
 package com.example.restaurant.controller;
 
 import com.example.restaurant.model.Reservation;
+import com.example.restaurant.model.StatutReservation;
 import com.example.restaurant.service.ClientService;
 import com.example.restaurant.service.TableRestoService;
 import com.example.restaurant.service.ReservationService;
@@ -38,13 +39,13 @@ public class HomeController {
         double soir = reservationService.occupancyRateForService(d, "soir", totalSeats);
         int matinReserved = reservationService.reservedSeatsForService(d, "matin");
         int soirReserved = reservationService.reservedSeatsForService(d, "soir");
-        
+
         // Counts
-        int clientCount = 0; 
+        int clientCount = 0;
         for (var c : clientService.listAll()) clientCount++;
-        int tableCount = 0; 
+        int tableCount = 0;
         for (var t : tableRestoService.listAll()) tableCount++;
-        
+
         // Reservations du jour
         Iterable<Reservation> todayReservations = reservationService.filterByDate(d);
         int todayReservationCount = 0;
@@ -55,17 +56,18 @@ public class HomeController {
             res.put("clientName", r.getClient() != null ? r.getClient().getNom() : "N/A");
             res.put("dateHeure", r.getPk() != null ? r.getPk().getDateHeure() : null);
             res.put("nbCouverts", r.getNbCouverts());
-            res.put("statut", r.getStatut());
+            // Convert enum en string pour Thymeleaf
+            res.put("statut", r.getStatut() != null ? r.getStatut().name() : "UNKNOWN");
             todayReservationsList.add(res);
         }
-        
+
         // Overall occupancy
         double overallOccupancy = (matinReserved + soirReserved) > 0 ?
             ((matin + soir) / 2) * 100 : 0;
-        
+
         // No-show rate
         double noShowRate = reservationService.noShowRate(d);
-        
+
         // Stats pour la semaine
         Map<String, Integer> weekStats = new HashMap<>();
         for (int i = 0; i < 7; i++) {
@@ -76,11 +78,12 @@ public class HomeController {
             }
             weekStats.put(day.toString(), count);
         }
-        
+
         // Stats par statut
         Map<String, Integer> statusStats = new HashMap<>();
+
         for (Reservation res : reservationService.listAll()) {
-            String statut = res.getStatut() != null ? res.getStatut() : "UNKNOWN";
+            String statut = res.getStatut() != null ? res.getStatut().name() : "UNKNOWN";
             statusStats.put(statut, statusStats.getOrDefault(statut, 0) + 1);
         }
 
@@ -98,7 +101,7 @@ public class HomeController {
         model.addAttribute("noShowRate", noShowRate);
         model.addAttribute("weekStats", weekStats);
         model.addAttribute("statusStats", statusStats);
-        
+
         return "index";
     }
 }

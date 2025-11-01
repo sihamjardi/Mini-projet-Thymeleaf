@@ -13,7 +13,8 @@ public class Reservation {
     @EmbeddedId
     private ReservationPK pk ;
     private int nbCouverts;
-    private String statut;
+    @Enumerated(EnumType.STRING)
+    private StatutReservation statut;
 
     @ManyToOne
     @MapsId("tablersto")
@@ -31,7 +32,7 @@ public class Reservation {
     }
 
 
-    public Reservation(ReservationPK pk, int nbCouverts, String statut, TableResto tablersto, Client client) {
+    public Reservation(ReservationPK pk, int nbCouverts, StatutReservation statut, TableResto tablersto, Client client) {
         this.pk = pk;
         this.nbCouverts = nbCouverts;
         this.statut = statut;
@@ -59,11 +60,11 @@ public class Reservation {
     @Transient
     public LocalDateTime getDateHeure() { return pk != null ? pk.getDateHeure() : null; }
 
-    public String getStatut() {
+    public StatutReservation getStatut() {
         return statut;
     }
 
-    public void setStatut(String statut) {
+    public void setStatut(StatutReservation statut) {
         this.statut = statut;
     }
 

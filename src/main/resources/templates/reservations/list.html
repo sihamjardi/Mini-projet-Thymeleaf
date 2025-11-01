@@ -43,8 +43,9 @@
           <input type="number" name="max" class="form-control" placeholder="Max couverts" th:value="${max}"/>
           <select name="statut" class="form-select" th:value="${statut}">
             <option value="">-- Statut --</option>
-            <option value="CONFIRMEE">Confirmée</option>
-            <option value="ANNULEE">Annulée</option>
+            <option value="CONFIRME">Confirmée</option>
+            <option value="ANNULE">Annulée</option>
+              <option value="HONORE">Honorée</option>
               <option value="NO_SHOW">No-Show</option>
           </select>
           <button class="btn btn-primary" type="submit">
@@ -78,12 +79,19 @@
               <td th:text="${r.tablersto.numero}"></td>
               <td><span class="badge" th:text="${r.tablersto.zone}"></span></td>
               <td th:text="${r.nbCouverts}"></td>
-              <td>
-                <span th:if="${r.statut == 'CONFIRMEE'}" class="badge badge-success">✓ Confirmée</span>
-                <span th:if="${r.statut == 'ANNULEE'}" class="badge badge-danger">✗ Annulée</span>
-                <span th:if="${r.statut == 'NO_SHOW'}" class="badge bg-warning text-dark">⚠ No_Show</span>
-              </td>
-              <td class="text-center">
+                <td>
+                    <span th:if="${r.statut == T(com.example.restaurant.model.StatutReservation).CONFIRME}"
+                          class="badge badge-success">✓ Confirmée</span>
+                    <span th:if="${r.statut == T(com.example.restaurant.model.StatutReservation).ANNULE}"
+                          class="badge badge-danger">✗ Annulée</span>
+                    <span th:if="${r.statut == T(com.example.restaurant.model.StatutReservation).HONORE}"
+                          class="badge bg-info text-dark">✔ Honorée</span>
+                    <span th:if="${r.statut == T(com.example.restaurant.model.StatutReservation).NO_SHOW}"
+                          class="badge bg-warning text-dark">⚠ No-Show</span>
+                </td>
+
+
+                <td class="text-center">
                 <a class="btn btn-success btn-sm" th:href="@{/reservations/edit(clientId=${r.client.id},tableId=${r.tablersto.id},dateHeure=${#temporals.format(r.dateHeure, 'yyyy-MM-dd''T''HH:mm:ss')})}">✏
                     <i class="bi bi-pencil-fill"></i>Modifier
                 </a>

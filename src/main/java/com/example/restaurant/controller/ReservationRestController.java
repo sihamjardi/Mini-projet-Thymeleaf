@@ -1,6 +1,7 @@
 package com.example.restaurant.controller;
 
 import com.example.restaurant.model.Reservation;
+import com.example.restaurant.model.StatutReservation;
 import com.example.restaurant.service.ReservationService;
 import com.example.restaurant.service.TableRestoService;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -27,17 +28,27 @@ public class ReservationRestController {
     }
 
     @GetMapping
-    public Iterable<Reservation> list(@RequestParam(value = "statut", required = false) String statut,
-                                      @RequestParam(value = "zone", required = false) String zone,
-                                      @RequestParam(value = "date", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
-                                      @RequestParam(value = "min", required = false) Integer min,
-                                      @RequestParam(value = "max", required = false) Integer max) {
-        if (statut != null) return reservationService.filterByStatut(statut);
+    public Iterable<Reservation> list(
+            @RequestParam(value = "statut", required = false) String statut,
+            @RequestParam(value = "zone", required = false) String zone,
+            @RequestParam(value = "date", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
+            @RequestParam(value = "min", required = false) Integer min,
+            @RequestParam(value = "max", required = false) Integer max) {
+
+        if (statut != null) {
+            try {
+                return reservationService.filterByStatut(StatutReservation.valueOf(statut.toUpperCase()));
+            } catch (IllegalArgumentException e) {
+                // Statut inconnu => retourner liste vide ou toutes les réservations
+                return reservationService.listAll();
+            }
+        }
         if (zone != null) return reservationService.filterByZone(zone);
         if (date != null) return reservationService.filterByDate(date);
         if (min != null && max != null) return reservationService.filterByGroupSize(min, max);
         return reservationService.listAll();
     }
+
 
     @GetMapping("/stats")
     public Map<String, Object> stats(@RequestParam("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {

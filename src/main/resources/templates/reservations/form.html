@@ -53,11 +53,14 @@
 
         <div class="form-group">
           <label class="form-label">Statut</label>
-          <select name="statut" class="form-select" required>
-            <option value="CONFIRMEE">Confirmée</option>
-            <option value="ANNULEE">Annulée</option>
-              <option value="NO_SHOW" >No-Show</option>
-          </select>
+            <select name="statut" class="form-select" th:value="${statut}">
+                <option value="">-- Statut --</option>
+                <option value="CONFIRME">Confirmée</option>
+                <option value="ANNULE">Annulée</option>
+                <option value="HONORE">Honorée</option>
+                <option value="NO_SHOW">No-Show</option>
+            </select>
+
         </div>
 
         <div class="mt-4">

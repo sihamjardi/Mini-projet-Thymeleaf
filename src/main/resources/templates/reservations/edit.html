@@ -60,8 +60,9 @@
         <div class="form-group">
           <label class="form-label">Statut</label>
           <select name="statut" class="form-select" required>
-            <option value="CONFIRMEE" th:selected="${reservation.statut == 'CONFIRMEE'}">Confirmée</option>
-            <option value="ANNULEE" th:selected="${reservation.statut == 'ANNULEE'}">Annulée</option>
+              <option value="CONFIRME" th:selected="${reservation.statut == 'CONFIRME'}">Confirmée</option>
+              <option value="ANNULE" th:selected="${reservation.statut == 'ANNULE'}">Annulée</option>
+              <option value="HONORE" th:selected="${reservation.statut == 'HONORE'}">Honorée</option>
               <option value="NO_SHOW" th:selected="${reservation.statut == 'NO_SHOW'}">No-Show</option>
           </select>
         </div>
