@@ -191,9 +191,9 @@ Tableau de bord / statistiques : [http://localhost:8080/statistiques](http://loc
 
 # 7. Démonstration (Vidéo)
 
-## 🎬 Démo Vidéo
+## 🎥 Démo
 
-[![Regarder la vidéo](https://img.youtube.com/vi/XQd5ssVA0rY/0.jpg)](https://youtu.be/XQd5ssVA0rY)
+🔗 [Regarder la démo sur YouTube](https://youtu.be/XQd5ssVA0rY)
 
 **Ce que la vidéo montre :**
 
@@ -216,6 +216,7 @@ Tableau de bord / statistiques : [http://localhost:8080/statistiques](http://loc
 - Encadrant: Mr.LACHGAR Mohamed 
 - Module: Techniques des Programmation Avancées - JAVA Avancé
 - Etablissement: Ecole Normale supérieur - MARRAKECH (ENS-M)
+
 
 
 
