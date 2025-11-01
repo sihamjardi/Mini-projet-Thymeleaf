@@ -40,8 +40,11 @@ src/main/resources/
 ├── templates/ → Pages Thymeleaf
 ├── static/ → CSS, JS, images
 └── application.properties
+
 <img width="330" height="430" alt="Capture d&#39;écran 2025-11-01 023041" src="https://github.com/user-attachments/assets/a1784fe9-1f52-4dd3-ab78-7723f805cea5" />
+
 <img width="326" height="423" alt="Capture d&#39;écran 2025-11-01 023053" src="https://github.com/user-attachments/assets/aaf63123-ffd3-4595-86b0-2896ae9d8652" />
+
 <img width="334" height="417" alt="Capture d&#39;écran 2025-11-01 023020" src="https://github.com/user-attachments/assets/bbd6e004-f629-489b-9bbb-f2c08b5fb57e" />
 
 
@@ -124,6 +127,7 @@ spring.jpa.show-sql=true
 spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQL8Dialect
 # Hibernate ddl auto (create, create-drop, update)
 spring.jpa.hibernate.ddl-auto=update
+```
 
 ---
 
@@ -209,6 +213,7 @@ Ce que la vidéo montre :
 - Encadrant: Mr.LACHGAR Mohamed 
 - Module: Techniques des Programmation Avancées - JAVA Avancé
 - Etablissement: Ecole Normale supérieur - MARRAKECH (ENS-M)
+
 
 
 
