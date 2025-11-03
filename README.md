@@ -49,7 +49,54 @@ src/main/resources/
 
 
 ### 🧭 Diagramme d’architecture  
-Navigateur → Contrôleur Spring → Service → Repository → Base de données → Vue Thymeleaf
+
+<img width="721" height="207" alt="Capture d&#39;écran 2025-10-29 005240" src="https://github.com/user-attachments/assets/1082cd7d-2536-461f-a8c1-8fd9a94bde15" />
+
+Browser (Interface Utilisateur)
+       ↓
+Controller Spring 
+       ├── ReservationController
+       ├── ClientController
+       └── TableRestoController
+       ↓
+   Service  
+       ├── ReservationService
+       ├── ClientService
+       └── TableRestoService
+       ↓
+   Repository (DAO)
+       ├── ReservationRepository
+       ├── ClientRepository
+       └── TableRestoRepository
+       ↓
+MySQL Database 
+       ├── client
+       ├── tableresto
+       └── reservation
+       ↑
+       ↳ View (Thymeleaf Templates)
+            ├── clients/
+            │    ├── list.html
+            │    ├── form.html
+            │    └── edit.html
+            ├── tables/
+            │    ├── list.html
+            │    ├── form.html
+            │    └── edit.html
+            ├── reservations/
+            │    ├── list.html
+            │    ├── form.html
+            │    ├── edit.html
+            │    └── stats.html  (statistiques avec Chart.js)
+            ├── fragments/
+            │    ├── layout.html
+            │    └── nav.html
+            │    └── stats.html  (statistiques avec Chart.js)
+            └── index.html
+            
+<img width="1536" height="1024" alt="diagramme d&#39;architecture" src="https://github.com/user-attachments/assets/18f8dbe1-106e-4a8b-919b-22e5f7ea2f04" />
+
+
 
 ---
 
@@ -216,6 +263,7 @@ Tableau de bord / statistiques : [http://localhost:8080/statistiques](http://loc
 - Encadrant: Mr.LACHGAR Mohamed 
 - Module: Techniques des Programmation Avancées - JAVA Avancé
 - Etablissement: Ecole Normale supérieur - MARRAKECH (ENS-M)
+
 
 
 
